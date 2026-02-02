@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: '/',
       disallow: '/admin/',
     },
-    sitemap: 'https://dailylight.blog/sitemap.xml',
+    sitemap: 'https://bible-blog-seven.vercel.app/sitemap.xml',
   };
 }
