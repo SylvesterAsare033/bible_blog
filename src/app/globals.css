@@ -1,3 +1,10 @@
+/* Logo Styles */
+.logo-image {
+  height: 48px; /* Slightly larger for better detail */
+  width: auto;
+  margin-right: 0.75rem;
+}
+
 :root {
   --ivory: #fafaf9;
   --charcoal: #1c1917;

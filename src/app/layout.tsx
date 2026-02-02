@@ -59,7 +59,10 @@ export default function RootLayout({
       <body>
         <nav className="navbar">
           <div className="nav-content">
-            <a href="/" className="logo">Daily Light</a>
+            <a href="/" className="logo">
+              <img src="/logo.png" alt="Daily Light" className="logo-image" />
+              Daily Light
+            </a>
             <div className="nav-links">
               <a href="/">Today</a>
               <a href="/archive">The Archive</a>
