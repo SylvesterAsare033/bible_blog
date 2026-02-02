@@ -4,7 +4,6 @@
   width: auto;
   margin-right: 0.75rem;
 }
-
 :root {
   --ivory: #fafaf9;
   --charcoal: #1c1917;
@@ -15,7 +14,10 @@
   --bg-texture: rgba(231, 229, 228, 0.3);
   --transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
-
+::selection {
+  background-color: var(--crimson);
+  color: var(--ivory);
+}
 * {
   box-sizing: border-box;
   padding: 0;
