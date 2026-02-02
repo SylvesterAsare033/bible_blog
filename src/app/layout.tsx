@@ -60,7 +60,7 @@ export default function RootLayout({
         <nav className="navbar">
           <div className="nav-content">
             <a href="/" className="logo">
-              <img src="/logo.png" alt="Daily Light" className="logo-image" />
+              {/* <img src="/logo.png" alt="Daily Light" className="logo-image" /> */}
               Daily Light
             </a>
             <div className="nav-links">
