@@ -3,7 +3,7 @@ import dbConnect from '@/lib/mongodb';
 import Post from '@/models/Post';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = 'https://dailylight.blog';
+  const baseUrl = 'https://bible-blog-seven.vercel.app';
 
   // Static routes
   const routes = [
