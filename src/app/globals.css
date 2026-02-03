@@ -406,3 +406,206 @@ body::before {
     gap: 1rem;
   }
 }
+
+.scripture-highlight {
+  color: var(--gold);
+  font-weight: 600;
+  font-family: var(--font-heading);
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: var(--transition);
+  position: relative;
+  padding: 0 2px;
+}
+
+.scripture-highlight:hover {
+  color: var(--crimson);
+  background: rgba(180, 83, 9, 0.05);
+  border-radius: 2px;
+}
+
+.scripture-highlight::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 1px;
+  bottom: -2px;
+  left: 0;
+  background-color: var(--gold);
+  transform: scaleX(0);
+  transform-origin: bottom right;
+  transition: transform 0.3s ease-out;
+}
+
+.scripture-highlight:hover::after {
+  transform: scaleX(1);
+  transform-origin: bottom left;
+}
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(22, 22, 22, 0.85); /* distinct dark overlay */
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: fadeIn 0.3s ease;
+}
+
+.modal-content {
+  background: var(--ivory);
+  padding: 3.5rem 2.5rem;
+  border-radius: 2px;
+  max-width: 500px;
+  width: 90%;
+  text-align: center;
+  position: relative;
+  box-shadow: 0 30px 60px rgba(0,0,0,0.12);
+  animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 1px solid var(--border);
+}
+
+.modal-content::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background-image: url("https://www.transparenttextures.com/patterns/natural-paper.png");
+  opacity: 0.2;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.modal-content > * {
+  position: relative;
+  z-index: 1;
+}
+
+.modal-close {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--stone);
+  transition: var(--transition);
+  opacity: 0.5;
+}
+
+.modal-close:hover {
+  opacity: 1;
+  color: var(--crimson);
+}
+
+.modal-title {
+  font-family: var(--font-heading);
+  font-size: 2.2rem;
+  color: var(--charcoal);
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.verse-text {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.4rem;
+  line-height: 1.8;
+  color: var(--charcoal);
+  font-style: italic;
+  font-weight: 400;
+}
+
+.loading-text, .error-text {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  color: var(--stone);
+  font-style: italic;
+}
+
+.error-text {
+  color: var(--crimson);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.modal-select {
+  padding: 0.4rem 0.8rem;
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border: 1px solid var(--border);
+  border-radius: 0;
+  background-color: transparent;
+  color: var(--stone);
+  cursor: pointer;
+  outline: none;
+  transition: var(--transition);
+  max-width: 100%;
+}
+
+.modal-select:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+.modal-body::-webkit-scrollbar {
+  width: 4px;
+}
+
+.modal-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.modal-body::-webkit-scrollbar-thumb {
+  background: var(--border);
+}
+
+/* Admin Specific Refinements */
+.admin-archive-item {
+  padding: 3rem;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.3);
+  transition: var(--transition);
+}
+
+.admin-archive-item:hover {
+  border-color: var(--gold);
+  background: white;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+}
+
+.btn-secondary-editorial {
+  padding: 0.6rem 1.2rem;
+  background: transparent;
+  color: var(--charcoal);
+  border: 1px solid var(--border);
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.btn-secondary-editorial:hover {
+  background: var(--charcoal);
+  color: var(--ivory);
+  border-color: var(--charcoal);
+}

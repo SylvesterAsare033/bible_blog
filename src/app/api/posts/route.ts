@@ -46,3 +46,39 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
+
+export async function PUT(request: Request) {
+  try {
+    await dbConnect();
+    const body = await request.json();
+    const { _id, ...updateData } = body;
+
+    if (!_id) {
+      return NextResponse.json({ error: 'Post ID is required' }, { status: 400 });
+    }
+
+    // Ensure date is midnight if it's being updated
+    if (updateData.date) {
+        const postDate = new Date(updateData.date);
+        postDate.setHours(0, 0, 0, 0);
+        updateData.date = postDate;
+    }
+
+    const post = await Post.findByIdAndUpdate(_id, updateData, {
+      new: true,
+      runValidators: true,
+    });
+
+    if (!post) {
+      return NextResponse.json({ error: 'Post not found' }, { status: 404 });
+    }
+
+    return NextResponse.json(post);
+  } catch (error: any) {
+    console.error("PUT /api/posts error:", error);
+    if (error.code === 11000) {
+        return NextResponse.json({ error: 'A post already exists for this date.' }, { status: 400 });
+    }
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+}

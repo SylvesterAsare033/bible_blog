@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import SocialShare from "@/components/SocialShare";
+import VerseModal from "@/components/VerseModal";
 
 interface Post {
   quote: string;
@@ -13,6 +14,7 @@ interface Post {
 export default function Home() {
   const [post, setPost] = useState<Post | null>(null);
   const [loading, setLoading] = useState(true);
+  const [selectedVerse, setSelectedVerse] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchPost() {
@@ -60,26 +62,54 @@ export default function Home() {
   }
 
   return (
-    <article className="editorial-card">
-      <div className="date-ornament">
-        {new Date(post.date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
-      </div>
-      
-      <h1 className="quote-hero">
-        “{post.quote}”
-      </h1>
-      
-      <span className="scripture-ref">{post.reference}</span>
-      
-      <div className="divider-gold"></div>
-      
-      <div className="insight-body">
-        {post.insight.split('\n').map((para, i) => (
-          <p key={i}>{para}</p>
-        ))}
-      </div>
+    <>
+      <article className="editorial-card">
+        <div className="date-ornament">
+          {new Date(post.date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+        </div>
+        
+        <h1 className="quote-hero">
+          “{post.quote}”
+        </h1>
+        
+        <span className="scripture-ref">{post.reference}</span>
+        
+        <div className="divider-gold"></div>
+        
+        <div className="insight-body">
+          {post.insight.split('\n').map((para, i) => {
+              const verseRegex = /(\b(?:[123]\s)?[A-Z][a-z]+\s\d{1,3}:\d{1,3}(?:-\d{1,3})?\b)/g;
+              const parts = para.split(verseRegex);
+              return (
+                <p key={i}>
+                  {parts.map((part, j) => {
+                    if (part.match(verseRegex)) {
+                      return (
+                        <span 
+                          key={j} 
+                          className="scripture-highlight"
+                          onClick={() => setSelectedVerse(part)}
+                        >
+                          {part}
+                        </span>
+                      );
+                    }
+                    return part;
+                  })}
+                </p>
+              );
+          })}
+        </div>
 
-      <SocialShare quote={post.quote} reference={post.reference} />
-    </article>
+        <SocialShare quote={post.quote} reference={post.reference} />
+      </article>
+
+      {selectedVerse && (
+        <VerseModal 
+          reference={selectedVerse} 
+          onClose={() => setSelectedVerse(null)} 
+        />
+      )}
+    </>
   );
 }
