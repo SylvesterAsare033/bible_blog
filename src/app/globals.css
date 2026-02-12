@@ -28,7 +28,7 @@
 body {
   background-color: var(--ivory);
   color: var(--charcoal);
-  font-family: 'Outfit', sans-serif;
+  font-family: "Outfit", sans-serif;
   line-height: 1.7;
   overflow-x: hidden;
   font-weight: 300;
@@ -38,7 +38,10 @@ body {
 body::before {
   content: "";
   position: fixed;
-  top: 0; left: 0; width: 100%; height: 100%;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   background-image: url("https://www.transparenttextures.com/patterns/natural-paper.png");
   opacity: 0.4;
   z-index: -1;
@@ -68,7 +71,7 @@ body::before {
 }
 
 .logo {
-  font-family: 'Cormorant Garamond', serif;
+  font-family: "Cormorant Garamond", serif;
   font-size: 2rem;
   font-weight: 600;
   letter-spacing: -0.02em;
@@ -95,7 +98,7 @@ body::before {
 }
 
 .nav-links a::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: -4px;
   left: 50%;
@@ -130,8 +133,14 @@ body::before {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(30px) scale(0.98); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .date-ornament {
@@ -157,7 +166,7 @@ body::before {
 }
 
 .quote-hero {
-  font-family: 'Cormorant Garamond', serif;
+  font-family: "Cormorant Garamond", serif;
   font-size: 4rem;
   line-height: 1.05;
   font-style: italic;
@@ -169,7 +178,7 @@ body::before {
 }
 
 .scripture-ref {
-  font-family: 'Outfit', sans-serif;
+  font-family: "Outfit", sans-serif;
   font-weight: 500;
   font-size: 1rem;
   letter-spacing: 0.1em;
@@ -188,7 +197,7 @@ body::before {
 }
 
 .insight-body {
-  font-family: 'Cormorant Garamond', serif;
+  font-family: "Cormorant Garamond", serif;
   font-size: 1.5rem;
   color: var(--stone);
   text-align: left;
@@ -237,7 +246,7 @@ body::before {
   transition: var(--transition);
   color: var(--stone);
   border-radius: 50%;
-  background: rgba(0,0,0,0);
+  background: rgba(0, 0, 0, 0);
 }
 
 .share-btn:hover {
@@ -257,7 +266,7 @@ body::before {
   color: var(--ivory);
   padding: 1.2rem 3rem;
   border: none;
-  font-family: 'Outfit', sans-serif;
+  font-family: "Outfit", sans-serif;
   font-weight: 600;
   font-size: 0.9rem;
   text-transform: uppercase;
@@ -293,7 +302,7 @@ body::before {
   border: none;
   border-bottom: 1px solid var(--border);
   padding: 0.8rem 0;
-  font-family: 'Cormorant Garamond', serif;
+  font-family: "Cormorant Garamond", serif;
   font-size: 1.6rem;
   color: var(--charcoal);
   outline: none;
@@ -336,35 +345,35 @@ body::before {
 }
 
 @media (max-width: 768px) {
-  .nav-content { 
-    flex-direction: column; 
-    gap: 1.5rem; 
-    padding: 1rem; 
+  .nav-content {
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 1rem;
   }
-  
-  .quote-hero { 
+
+  .quote-hero {
     font-size: 2.2rem; /* Reduced from 2.8rem */
     line-height: 1.15;
   }
-  
-  .insight-body { 
-    font-size: 1.25rem; 
+
+  .insight-body {
+    font-size: 1.25rem;
     line-height: 1.6;
   }
-  
-  .logo { 
-    font-size: 1.8rem; 
+
+  .logo {
+    font-size: 1.8rem;
   }
-  
-  .content-container { 
-    padding: 0 1.25rem; 
+
+  .content-container {
+    padding: 0 1.25rem;
     margin-bottom: 4rem;
   }
-  
+
   .editorial-card {
     padding: 0 0.5rem;
   }
-  
+
   .share-suite {
     flex-wrap: wrap;
     gap: 1.5rem;
@@ -379,20 +388,20 @@ body::before {
   .quote-hero {
     font-size: 1.8rem; /* Further reduction for very small screens */
   }
-  
+
   .insight-body p::first-letter {
     font-size: 2.8rem;
     margin-right: 0.5rem;
   }
-  
+
   .nav-links {
     gap: 1.5rem;
   }
-  
+
   .nav-links a {
     font-size: 0.75rem;
   }
-  
+
   .btn-editorial {
     padding: 1rem 2rem;
     width: 100%; /* Full width buttons on mobile */
@@ -401,7 +410,7 @@ body::before {
   .input-editorial {
     font-size: 1.2rem;
   }
-  
+
   .share-suite {
     gap: 1rem;
   }
@@ -425,7 +434,7 @@ body::before {
 }
 
 .scripture-highlight::after {
-  content: '';
+  content: "";
   position: absolute;
   width: 100%;
   height: 1px;
@@ -466,7 +475,7 @@ body::before {
   width: 90%;
   text-align: center;
   position: relative;
-  box-shadow: 0 30px 60px rgba(0,0,0,0.12);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.12);
   animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
   border: 1px solid var(--border);
 }
@@ -474,7 +483,10 @@ body::before {
 .modal-content::before {
   content: "";
   position: absolute;
-  top: 0; left: 0; width: 100%; height: 100%;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   background-image: url("https://www.transparenttextures.com/patterns/natural-paper.png");
   opacity: 0.2;
   pointer-events: none;
@@ -514,7 +526,7 @@ body::before {
 }
 
 .verse-text {
-  font-family: 'Cormorant Garamond', serif;
+  font-family: "Cormorant Garamond", serif;
   font-size: 1.4rem;
   line-height: 1.8;
   color: var(--charcoal);
@@ -522,7 +534,8 @@ body::before {
   font-weight: 400;
 }
 
-.loading-text, .error-text {
+.loading-text,
+.error-text {
   font-family: var(--font-body);
   font-size: 1rem;
   color: var(--stone);
@@ -534,13 +547,23 @@ body::before {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes slideUp {
-  from { transform: translateY(20px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
 .modal-select {
@@ -588,7 +611,7 @@ body::before {
   border-color: var(--gold);
   background: white;
   transform: translateY(-2px);
-  box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
 }
 
 .btn-secondary-editorial {
@@ -608,4 +631,104 @@ body::before {
   background: var(--charcoal);
   color: var(--ivory);
   border-color: var(--charcoal);
+}
+
+/* Remember Box & Interaction Styling */
+.remember-box {
+  margin: 4rem auto;
+  padding: 2.5rem;
+  border: 1px double var(--gold);
+  background: rgba(180, 83, 9, 0.03);
+  max-width: 500px;
+  position: relative;
+}
+
+.remember-label {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--ivory);
+  padding: 0 1rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--gold);
+}
+
+.remember-text {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 1.4rem;
+  font-style: italic;
+  color: var(--charcoal);
+  line-height: 1.5;
+  margin: 0 !important;
+}
+
+.remember-text::first-letter {
+  font-size: 1.4rem !important;
+  float: none !important;
+  margin: 0 !important;
+  color: inherit !important;
+  font-weight: inherit !important;
+}
+
+.interaction-suite {
+  margin-top: 6rem;
+  border-top: 1px solid var(--border);
+  padding-top: 3rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 4rem;
+}
+
+.interaction-suite .share-suite {
+  margin-top: 0;
+  border-top: none;
+  padding-top: 0;
+}
+
+.like-btn-main {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: none;
+  border: 1px solid var(--border);
+  padding: 0.6rem 1.2rem;
+  cursor: pointer;
+  transition: var(--transition);
+  color: var(--stone);
+  border-radius: 20px;
+}
+
+.like-btn-main svg {
+  width: 20px;
+  height: 20px;
+  transition: var(--transition);
+}
+
+.like-btn-main:hover {
+  border-color: var(--crimson);
+  color: var(--crimson);
+  background: rgba(159, 18, 57, 0.05);
+  transform: translateY(-2px);
+}
+
+.like-btn-main:active svg {
+  transform: scale(1.4);
+}
+
+.like-count {
+  font-family: "Outfit", sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .interaction-suite {
+    flex-direction: column;
+    gap: 2rem;
+  }
 }

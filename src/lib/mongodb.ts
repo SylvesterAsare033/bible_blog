@@ -6,12 +6,6 @@ if (!MONGODB_URI) {
   throw new Error('Please define the MONGODB_URI environment variable inside .env.local');
 }
 
-console.log("DEBUG: MONGODB_URI is defined. Length:", MONGODB_URI.length);
-if (MONGODB_URI.includes('0odbIYpA7IiQohal')) {
-  console.log("DEBUG: MONGODB_URI contains the expected password suffix.");
-} else {
-  console.log("DEBUG: MONGODB_URI does NOT contain the current password from .env.local. DID YOU RESTART THE SERVER?");
-}
 
 /**
  * Global is used here to maintain a cached connection across hot reloads

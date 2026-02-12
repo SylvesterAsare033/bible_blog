@@ -8,7 +8,9 @@ interface Post {
   quote: string;
   reference: string;
   insight: string;
+  remember?: string;
   date: string;
+  likes?: number;
 }
 
 export default function Admin() {
@@ -16,6 +18,7 @@ export default function Admin() {
     quote: "",
     reference: "",
     insight: "",
+    remember: "",
     date: new Date().toISOString().split('T')[0]
   });
   const [posts, setPosts] = useState<Post[]>([]);
@@ -46,6 +49,7 @@ export default function Admin() {
       quote: post.quote,
       reference: post.reference,
       insight: post.insight,
+      remember: post.remember || "",
       date: new Date(post.date).toISOString().split('T')[0]
     });
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -57,6 +61,7 @@ export default function Admin() {
       quote: "",
       reference: "",
       insight: "",
+      remember: "",
       date: new Date().toISOString().split('T')[0]
     });
     setError("");
@@ -154,6 +159,16 @@ export default function Admin() {
           </div>
 
           <div className="form-field">
+            <label className="form-label-editorial">Call to Remembrance (Optional)</label>
+            <input 
+              className="input-editorial"
+              value={formData.remember}
+              onChange={(e) => setFormData({...formData, remember: e.target.value})}
+              placeholder="A short takeaway or reminder..."
+            />
+          </div>
+
+          <div className="form-field">
             <label className="form-label-editorial">Publication Date</label>
             <input 
               type="date"
@@ -205,6 +220,14 @@ export default function Admin() {
                <p style={{ fontSize: '1rem', lineHeight: '1.7', opacity: 0.7, display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
                  {post.insight}
                </p>
+               {post.remember && (
+                 <p style={{ marginTop: '1rem', fontSize: '0.9rem', fontStyle: 'italic', color: 'var(--stone)', opacity: 0.8 }}>
+                   <strong>Remember:</strong> {post.remember}
+                 </p>
+               )}
+               <div style={{ marginTop: '1rem', fontSize: '0.8rem', opacity: 0.5 }}>
+                 Likes: {post.likes || 0}
+               </div>
             </div>
           ))}
           {posts.length === 0 && <p style={{ opacity: 0.5, fontStyle: 'italic' }}>No insights recorded yet.</p>}

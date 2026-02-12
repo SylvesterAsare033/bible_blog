@@ -5,9 +5,12 @@ import SocialShare from "@/components/SocialShare";
 import VerseModal from "@/components/VerseModal";
 
 interface Post {
+  _id: string;
   quote: string;
   insight: string;
   reference: string;
+  remember?: string;
+  likes?: number;
   date: string;
 }
 
@@ -38,6 +41,28 @@ export default function Home() {
 
     fetchPost();
   }, []);
+
+  const handleLike = async () => {
+    if (!post?._id) return;
+    
+    // Optimistic UI update
+    const currentLikes = post.likes || 0;
+    setPost({ ...post, likes: currentLikes + 1 });
+
+    try {
+      const res = await fetch(`/api/posts/${post._id}/like`, { method: 'POST' });
+      if (!res.ok) {
+        // Revert on error
+        setPost({ ...post, likes: currentLikes });
+      } else {
+        const data = await res.json();
+        setPost({ ...post, likes: data.likes });
+      }
+    } catch (err) {
+      console.error("Failed to like post:", err);
+      setPost({ ...post, likes: currentLikes });
+    }
+  };
 
   if (loading) {
     return (
@@ -101,7 +126,23 @@ export default function Home() {
           })}
         </div>
 
-        <SocialShare quote={post.quote} reference={post.reference} />
+        {post.remember && (
+          <div className="remember-box">
+            <span className="remember-label">To Carry With You</span>
+            <p className="remember-text">{post.remember}</p>
+          </div>
+        )}
+
+        <div className="interaction-suite">
+          <SocialShare quote={post.quote} reference={post.reference} />
+          
+          <button className="like-btn-main" onClick={handleLike} aria-label="Like this insight">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+            </svg>
+            <span className="like-count">{post.likes || 0}</span>
+          </button>
+        </div>
       </article>
 
       {selectedVerse && (

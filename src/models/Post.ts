@@ -3,6 +3,8 @@ import mongoose, { Schema, model, models } from 'mongoose';
 export interface IPost {
   quote: string;
   insight: string;
+  remember?: string;
+  likes?: number;
   reference: string;
   date: Date;
   createdAt?: Date;
@@ -18,6 +20,13 @@ const PostSchema = new Schema<IPost>(
     insight: {
       type: String,
       required: [true, 'Please provide your insight.'],
+    },
+    remember: {
+      type: String,
+    },
+    likes: {
+      type: Number,
+      default: 0,
     },
     reference: {
       type: String,
