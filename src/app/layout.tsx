@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
 export const viewport: Viewport = {
@@ -75,6 +76,7 @@ export default function RootLayout({
         <footer className="footer">
           <p>© {new Date().getFullYear()} Daily Light — An Editorial Bible Blog</p>
         </footer>
+        <Analytics />
       </body>
     </html>
   );
