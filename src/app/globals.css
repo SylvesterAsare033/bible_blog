@@ -732,3 +732,15 @@ body::before {
     gap: 2rem;
   }
 }
+
+.like-btn-main.already-liked {
+  border-color: var(--crimson);
+  color: var(--crimson);
+  opacity: 0.7;
+  cursor: default;
+}
+
+.like-btn-main.already-liked:hover {
+  transform: none;
+  background: none;
+}
