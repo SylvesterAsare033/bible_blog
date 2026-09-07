@@ -13,6 +13,31 @@
   --border: rgba(28, 25, 23, 0.08);
   --bg-texture: rgba(231, 229, 228, 0.3);
   --transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ivory: #171513;
+    --charcoal: #f5f2ed;
+    --stone: #c8c0b8;
+    --crimson: #f08a9d;
+    --gold: #e6a75c;
+    --border: rgba(245, 242, 237, 0.16);
+    --bg-texture: rgba(74, 68, 62, 0.3);
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme="dark"] {
+  --ivory: #171513;
+  --charcoal: #f5f2ed;
+  --stone: #c8c0b8;
+  --crimson: #f08a9d;
+  --gold: #e6a75c;
+  --border: rgba(245, 242, 237, 0.16);
+  --bg-texture: rgba(74, 68, 62, 0.3);
+  color-scheme: dark;
 }
 ::selection {
   background-color: var(--crimson);
@@ -82,7 +107,34 @@ body::before {
 
 .nav-links {
   display: flex;
+  align-items: center;
   gap: 2.5rem;
+}
+
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--stone);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.theme-toggle:hover {
+  color: var(--crimson);
+  border-color: var(--crimson);
+  transform: rotate(12deg);
+}
+
+.theme-toggle svg {
+  width: 1rem;
+  height: 1rem;
 }
 
 .nav-links a {
@@ -603,13 +655,13 @@ body::before {
 .admin-archive-item {
   padding: 3rem;
   border: 1px solid var(--border);
-  background: rgba(255, 255, 255, 0.3);
+  background: color-mix(in srgb, var(--ivory) 70%, transparent);
   transition: var(--transition);
 }
 
 .admin-archive-item:hover {
   border-color: var(--gold);
-  background: white;
+  background: var(--ivory);
   transform: translateY(-2px);
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
 }
