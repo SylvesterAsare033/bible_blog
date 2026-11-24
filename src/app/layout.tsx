@@ -1,15 +1,34 @@
-/* eslint-disable @next/next/no-page-custom-font */
 /* eslint-disable @next/next/no-html-link-for-pages */
 import type { Metadata, Viewport } from "next";
+import { Newsreader, Instrument_Sans } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import ThemeToggle from "@/components/ThemeToggle";
 import "./globals.css";
 
+const newsreader = Newsreader({
+  subsets: ["latin"],
+  style: ["normal", "italic"],
+  variable: "--font-newsreader",
+  display: "swap",
+});
+
+const instrumentSans = Instrument_Sans({
+  subsets: ["latin"],
+  variable: "--font-instrument",
+  display: "swap",
+});
+
+// Applies the saved theme before first paint so dark-mode readers don't see
+// a flash of the light theme.
+const themeScript = `try{var t=localStorage.getItem("daily-light-theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}`;
+
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#f6f3ec" },
+    { media: "(prefers-color-scheme: dark)", color: "#141311" },
+  ],
 };
 
 export const metadata: Metadata = {
@@ -71,40 +90,38 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html
+      lang="en"
+      className={`${newsreader.variable} ${instrumentSans.variable}`}
+      suppressHydrationWarning
+    >
       <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link
-          rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossOrigin="anonymous"
-        />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Outfit:wght@200;300;400;500;600;700&display=swap"
-          rel="stylesheet"
-        />
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <body>
-        <nav className="navbar">
-          <div className="nav-content">
-            {/* // eslint-disable-next-line @next/next/no-html-link-for-pages */}
-            <a href="/" className="logo">
-              {/* <img src="/logo.png" alt="Daily Light" className="logo-image" /> */}
+        <header className="site-header">
+          <div className="site-header__inner">
+            <a href="/" className="brand" aria-label="Daily Light — today's reflection">
+              <span className="brand__mark" aria-hidden="true" />
               Daily Light
             </a>
-            <div className="nav-links">
-              {/* // eslint-disable-next-line @next/next/no-html-link-for-pages */}
+            <nav className="site-nav" aria-label="Main">
               <a href="/">Today</a>
-              <a href="/archive">The Archive</a>
+              <a href="/archive">Archive</a>
               <ThemeToggle />
-            </div>
+            </nav>
           </div>
-        </nav>
-        <main className="content-container">{children}</main>
-        <footer className="footer">
-          <p>
-            © {new Date().getFullYear()} Daily Light — An Editorial Bible Blog
-          </p>
+        </header>
+        <main className="site-main">{children}</main>
+        <footer className="site-footer">
+          <div className="site-footer__inner">
+            <a href="/" className="brand">
+              <span className="brand__mark" aria-hidden="true" />
+              Daily Light
+            </a>
+            <p>A short reflection on Scripture, every day.</p>
+            <p>© {new Date().getFullYear()} Daily Light</p>
+          </div>
         </footer>
         <Analytics />
       </body>

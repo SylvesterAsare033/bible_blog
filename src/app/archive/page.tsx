@@ -1,14 +1,29 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import SocialShare from "@/components/SocialShare";
 
 interface Post {
   _id: string;
   quote: string;
-  insight: string;
   reference: string;
   date: string;
+  imageVersion?: number;
+}
+
+// Post dates are stored as midnight UTC, so format them in UTC to avoid
+// showing the previous day for readers west of Greenwich.
+const fmt = (date: string, opts: Intl.DateTimeFormatOptions) =>
+  new Date(date).toLocaleDateString("en-US", { ...opts, timeZone: "UTC" });
+
+function groupByMonth(posts: Post[]) {
+  const groups: { month: string; posts: Post[] }[] = [];
+  for (const post of posts) {
+    const month = fmt(post.date, { month: "long", year: "numeric" });
+    const last = groups[groups.length - 1];
+    if (last?.month === month) last.posts.push(post);
+    else groups.push({ month, posts: [post] });
+  }
+  return groups;
 }
 
 export default function Archive() {
@@ -16,6 +31,7 @@ export default function Archive() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    document.title = "Archive | Daily Light";
     async function fetchPosts() {
       try {
         const res = await fetch("/api/posts");
@@ -32,42 +48,57 @@ export default function Archive() {
     fetchPosts();
   }, []);
 
-  if (loading) {
-    return (
-      <div className="editorial-card" style={{ opacity: 0.5 }}>
-        <p>Consulting the archives...</p>
-      </div>
-    );
-  }
-
   return (
-    <div className="archive-list">
-      <header style={{ textAlign: 'center', marginBottom: '6rem' }}>
-        <div className="date-ornament">Chronicles</div>
-        <h1 className="logo" style={{ fontSize: '4rem', marginBottom: '1rem' }}>The Archive</h1>
-        <p style={{ opacity: 0.5, fontStyle: 'italic', fontSize: '1.2rem' }}>A treasury of daily reflections and spiritual light.</p>
+    <div className="archive">
+      <header className="page-head">
+        <p className="kicker">The Archive</p>
+        <h1 className="page-title">Every reflection</h1>
+        <p className="page-lede">
+          Each day&rsquo;s verse and reflection, newest first.
+        </p>
       </header>
-      
-      {posts.length === 0 ? (
-        <div className="editorial-card">
-          <p>The journey has just begun. No records yet.</p>
+
+      {loading ? (
+        <div className="skeleton" aria-busy="true" style={{ justifyItems: "start" }}>
+          <span style={{ width: "8rem" }} />
+          <span style={{ width: "100%", height: "1.5rem" }} />
+          <span style={{ width: "80%", height: "1.5rem" }} />
         </div>
+      ) : posts.length === 0 ? (
+        <p className="page-lede">No reflections have been published yet.</p>
       ) : (
-        posts.map((post) => (
-          <article key={post._id} className="archive-item">
-            <div className="date-ornament" style={{ justifyContent: 'flex-start' }}>
-              {new Date(post.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
-            </div>
-            
-            <h2 className="quote-hero" style={{ fontSize: '2.5rem', textAlign: 'left' }}>
-              “{post.quote}”
-            </h2>
-            
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span className="scripture-ref" style={{ marginBottom: 0 }}>{post.reference}</span>
-              <a href={`/?date=${new Date(post.date).toISOString().split('T')[0]}`} className="share-label" style={{ textDecoration: 'none', color: 'var(--crimson)' }}>View Full →</a>
-            </div>
-          </article>
+        groupByMonth(posts).map(({ month, posts }) => (
+          <section key={month} className="archive-month">
+            <h2 className="archive-month__title">{month}</h2>
+            <ol className="archive-list">
+              {posts.map((post) => (
+                <li key={post._id} className="archive-entry">
+                  <a
+                    href={`/?date=${new Date(post.date).toISOString().split("T")[0]}`}
+                    className="archive-entry__link"
+                  >
+                    <span className="archive-entry__date">
+                      <span className="archive-entry__day">{fmt(post.date, { day: "numeric" })}</span>
+                      <span className="archive-entry__weekday">{fmt(post.date, { weekday: "short" })}</span>
+                    </span>
+                    <span>
+                      <span className="archive-entry__quote">&ldquo;{post.quote}&rdquo;</span>
+                      <span className="archive-entry__ref">{post.reference}</span>
+                    </span>
+                    {post.imageVersion && (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        className="archive-entry__thumb"
+                        src={`/api/posts/${post._id}/image?v=${post.imageVersion}`}
+                        alt=""
+                        loading="lazy"
+                      />
+                    )}
+                  </a>
+                </li>
+              ))}
+            </ol>
+          </section>
         ))
       )}
     </div>

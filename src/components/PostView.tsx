@@ -16,6 +16,9 @@ interface Post {
   date: string;
 }
 
+// Matches references like "John 3:16", "1 Corinthians 13:4-7".
+const VERSE_REGEX = /(\b(?:[123]\s)?[A-Z][a-z]+\s\d{1,3}:\d{1,3}(?:-\d{1,3})?\b)/;
+
 export default function PostView() {
   const [post, setPost] = useState<Post | null>(null);
   const [loading, setLoading] = useState(true);
@@ -103,116 +106,124 @@ export default function PostView() {
 
   if (loading) {
     return (
-      <div className="editorial-card" style={{ opacity: 0.5 }}>
-        <p>Gathering illumination...</p>
+      <div className="skeleton" aria-busy="true" aria-label="Loading today's reflection">
+        <span style={{ width: "10rem" }} />
+        <span style={{ width: "90%", height: "2.5rem" }} />
+        <span style={{ width: "70%", height: "2.5rem" }} />
+        <span style={{ width: "8rem" }} />
       </div>
     );
   }
 
   if (!post) {
     return (
-      <div className="editorial-card">
-        <div className="date-ornament">Silence</div>
-        <h1 className="quote-hero">A quiet moment of reflection awaits.</h1>
-        <p className="scripture-ref">No insight found for this day.</p>
-        <div className="divider-gold"></div>
-        <div style={{ marginTop: "2rem" }}>
-          <a href="/admin" className="btn-editorial">
-            Create First Post
-          </a>
-        </div>
+      <div className="state">
+        <p className="kicker">A quiet day</p>
+        <h1 className="state__title">There&rsquo;s no reflection for this day yet.</h1>
+        <p className="state__text">
+          Browse earlier reflections in <a href="/archive">the archive</a>.
+        </p>
       </div>
     );
   }
 
+  const isoDate = new Date(post.date).toISOString().split("T")[0];
+  const paragraphs = post.insight.split(/\n+/).filter((p) => p.trim());
+  const prayerLines = post.prayer?.split(/\n+/).filter((p) => p.trim()) ?? [];
+
   return (
     <>
-      <article className="editorial-card">
-        <div className="date-ornament">
-          {new Date(post.date).toLocaleDateString("en-US", {
-            weekday: "long",
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-          })}
-        </div>
+      <article className="post">
+        <header className="post__header">
+          <p className="kicker">
+            <time dateTime={isoDate}>
+              {new Date(post.date).toLocaleDateString("en-US", {
+                weekday: "long",
+                month: "long",
+                day: "numeric",
+                year: "numeric",
+                timeZone: "UTC",
+              })}
+            </time>
+          </p>
+          <h1 className="post__verse">{post.quote}</h1>
+          <p className="post__ref">{post.reference}</p>
+        </header>
 
-        {post.imageVersion && (
-          <figure className="post-image">
+        {post.imageVersion ? (
+          <figure className="post__hero">
             <img
               src={`/api/posts/${post._id}/image?v=${post.imageVersion}`}
               alt={`Illustration for ${post.reference}`}
             />
           </figure>
+        ) : (
+          <hr className="post__divider" />
         )}
 
-        <h1 className="quote-hero">“{post.quote}”</h1>
-
-        <span className="scripture-ref">{post.reference}</span>
-
-        <div className="divider-gold"></div>
-
-        <div className="insight-body">
-          {post.insight.split("\n").map((para, i) => {
-            const verseRegex =
-              /(\b(?:[123]\s)?[A-Z][a-z]+\s\d{1,3}:\d{1,3}(?:-\d{1,3})?\b)/g;
-            const parts = para.split(verseRegex);
+        <div className="post__body prose">
+          {paragraphs.map((para, i) => {
+            const parts = para.split(VERSE_REGEX);
             return (
               <p key={i}>
-                {parts.map((part, j) => {
-                  if (part.match(verseRegex)) {
-                    return (
-                      <span
-                        key={j}
-                        className="scripture-highlight"
-                        onClick={() => setSelectedVerse(part)}
-                      >
-                        {part}
-                      </span>
-                    );
-                  }
-                  return part;
-                })}
+                {parts.map((part, j) =>
+                  j % 2 === 1 ? (
+                    <button
+                      key={j}
+                      type="button"
+                      className="verse-link"
+                      onClick={() => setSelectedVerse(part)}
+                    >
+                      {part}
+                    </button>
+                  ) : (
+                    part
+                  ),
+                )}
               </p>
             );
           })}
         </div>
 
         {post.remember && (
-          <div className="remember-box">
-            <span className="remember-label">To Carry With You</span>
-            <p className="remember-text">{post.remember}</p>
-          </div>
+          <aside className="post__takeaway">
+            <p className="label">To carry with you</p>
+            <p className="post__takeaway-text">{post.remember}</p>
+          </aside>
         )}
 
-        {post.prayer && (
-          <div className="prayer-box">
-            <span className="prayer-label">A Prayer</span>
-            {post.prayer.split("\n").filter(Boolean).map((line, i) => (
-              <p key={i} className="prayer-text">{line}</p>
+        {prayerLines.length > 0 && (
+          <section className="post__prayer" aria-label="Prayer">
+            <h2 className="label">A prayer</h2>
+            {prayerLines.map((line, i) => (
+              <p key={i}>{line}</p>
             ))}
-          </div>
+          </section>
         )}
 
-        <div className="interaction-suite">
+        <footer className="post__actions">
           <SocialShare
             quote={post.quote}
             reference={post.reference}
-            url={`${window.location.origin}/?date=${new Date(post.date).toISOString().split("T")[0]}`}
+            url={`${window.location.origin}/?date=${isoDate}`}
           />
-
           <button
-            className={`like-btn-main ${hasLiked ? "already-liked" : ""}`}
+            type="button"
+            className={`like-btn ${hasLiked ? "is-liked" : ""}`}
             onClick={handleLike}
             disabled={hasLiked}
-            aria-label={hasLiked ? "Already liked" : "Like this insight"}
+            aria-label={hasLiked ? "You liked this reflection" : "Like this reflection"}
           >
-            <svg viewBox="0 0 24 24" fill="currentColor">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
               <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
             </svg>
-            <span className="like-count">{post.likes || 0}</span>
+            <span>{post.likes || 0}</span>
           </button>
-        </div>
+        </footer>
+
+        <p className="post__more">
+          <a href="/archive">Read earlier reflections →</a>
+        </p>
       </article>
 
       {selectedVerse && (

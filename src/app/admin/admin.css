@@ -1,0 +1,199 @@
+/* ==========================================================================
+   Admin — the original "editorial" look, scoped to .admin-shell so the
+   reader redesign in globals.css doesn't affect it.
+   ========================================================================== */
+
+.admin-shell {
+  --ivory: #fafaf9;
+  --charcoal: #1c1917;
+  --stone: #44403c;
+  --crimson: #9f1239;
+  --gold: #b45309;
+  --border: rgba(28, 25, 23, 0.08);
+  --transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+  --font-heading: var(--font-cormorant), serif;
+  --font-body: var(--font-outfit), sans-serif;
+
+  max-width: 720px;
+  margin: 0 auto;
+  font-family: var(--font-body);
+  font-weight: 300;
+  line-height: 1.7;
+  color: var(--charcoal);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .admin-shell {
+    --ivory: #171513;
+    --charcoal: #f5f2ed;
+    --stone: #c8c0b8;
+    --crimson: #f08a9d;
+    --gold: #e6a75c;
+    --border: rgba(245, 242, 237, 0.16);
+  }
+}
+
+:root[data-theme="dark"] .admin-shell {
+  --ivory: #171513;
+  --charcoal: #f5f2ed;
+  --stone: #c8c0b8;
+  --crimson: #f08a9d;
+  --gold: #e6a75c;
+  --border: rgba(245, 242, 237, 0.16);
+}
+
+.admin-shell .editorial-card {
+  text-align: center;
+  animation: adminFadeIn 1.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@keyframes adminFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.admin-shell .logo {
+  font-family: var(--font-heading);
+  font-size: 2rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--charcoal);
+  font-style: italic;
+  line-height: 1.2;
+}
+
+.admin-shell .date-ornament {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.25em;
+  color: var(--gold);
+  margin-bottom: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+}
+
+.admin-shell .date-ornament::before,
+.admin-shell .date-ornament::after {
+  content: "";
+  height: 1px;
+  width: 40px;
+  background-color: var(--gold);
+  opacity: 0.4;
+}
+
+.admin-shell .form-field {
+  margin-bottom: 3.5rem;
+  text-align: left;
+}
+
+.admin-shell .form-label-editorial {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  margin-bottom: 1rem;
+  color: var(--stone);
+}
+
+.admin-shell .input-editorial {
+  width: 100%;
+  background: none;
+  border: none;
+  border-bottom: 1px solid var(--border);
+  padding: 0.8rem 0;
+  font-family: var(--font-heading);
+  font-size: 1.6rem;
+  color: var(--charcoal);
+  outline: none;
+  transition: var(--transition);
+}
+
+.admin-shell .input-editorial:focus {
+  border-bottom-color: var(--crimson);
+}
+
+.admin-shell .btn-editorial {
+  background-color: var(--charcoal);
+  color: var(--ivory);
+  padding: 1.2rem 3rem;
+  border: none;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  cursor: pointer;
+  transition: var(--transition);
+  border-radius: 2px;
+}
+
+.admin-shell .btn-editorial:hover {
+  background-color: var(--crimson);
+  letter-spacing: 0.2em;
+}
+
+.admin-shell .btn-secondary-editorial {
+  padding: 0.6rem 1.2rem;
+  background: transparent;
+  color: var(--charcoal);
+  border: 1px solid var(--border);
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.admin-shell .btn-secondary-editorial:hover {
+  background: var(--charcoal);
+  color: var(--ivory);
+  border-color: var(--charcoal);
+}
+
+.admin-shell .admin-archive-item {
+  padding: 3rem;
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--ivory) 70%, transparent);
+  transition: var(--transition);
+}
+
+.admin-shell .admin-archive-item:hover {
+  border-color: var(--gold);
+  background: var(--ivory);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+}
+
+.admin-shell .admin-image-preview {
+  margin-bottom: 1rem;
+}
+
+.admin-shell .admin-image-preview img {
+  display: block;
+  max-width: 100%;
+  max-height: 260px;
+  object-fit: cover;
+  border: 1px solid var(--border);
+}
+
+@media (max-width: 480px) {
+  .admin-shell .btn-editorial {
+    padding: 1rem 2rem;
+    width: 100%;
+  }
+
+  .admin-shell .input-editorial {
+    font-size: 1.2rem;
+  }
+}

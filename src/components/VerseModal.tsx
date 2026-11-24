@@ -52,39 +52,48 @@ const VerseModal: React.FC<VerseModalProps> = ({ reference, onClose }) => {
     }
   }, [reference, translation]);
 
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onClose]);
+
   if (!reference) return null;
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={e => e.stopPropagation()}>
-        <button className="modal-close" onClick={onClose}>×</button>
-        
-        <div className="date-ornament" style={{ marginBottom: '0.5rem', color: 'var(--gold)' }}>The Living Word</div>
-        <h3 className="modal-title">{reference}</h3>
-        
-        <div style={{ margin: '1rem 0' }}>
-            <select 
-                className="modal-select"
-                value={translation}
-                onChange={(e) => setTranslation(e.target.value)}
-            >
-                {VERSIONS.map(v => (
-                    <option key={v.id} value={v.id}>{v.name}</option>
-                ))}
-            </select>
-        </div>
+      <div
+        className="modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="verse-modal-title"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button type="button" className="modal__close" onClick={onClose} aria-label="Close">
+          ×
+        </button>
 
-        <div className="divider-gold" style={{ margin: '1rem auto 2rem', width: '60px' }}></div>
-        
-        <div className="modal-body" style={{ maxHeight: '60vh', overflowY: 'auto', paddingRight: '1rem' }}>
+        <p className="kicker">Scripture</p>
+        <h3 className="modal__title" id="verse-modal-title">{reference}</h3>
+
+        <select
+          className="modal-select"
+          aria-label="Bible translation"
+          value={translation}
+          onChange={(e) => setTranslation(e.target.value)}
+        >
+          {VERSIONS.map((v) => (
+            <option key={v.id} value={v.id}>{v.name}</option>
+          ))}
+        </select>
+
+        <div className="modal__body">
           {loading ? (
-            <p className="loading-text">Seeking the Word...</p>
+            <p className="modal__status">Loading…</p>
           ) : error ? (
-            <p className="error-text">{error}</p>
+            <p className="modal__status is-error">{error}</p>
           ) : (
-            <p className="verse-text" style={{ textAlign: 'left', fontWeight: 400, fontStyle: 'normal' }}>
-                {verseText}
-            </p>
+            <p className="verse-text">{verseText.trim()}</p>
           )}
         </div>
       </div>
