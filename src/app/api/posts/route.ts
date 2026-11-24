@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import Post from '@/models/Post';
+import { parseImageFields, toClientPost, ImageError } from '@/lib/postImage';
 
 export const dynamic = 'force-dynamic';
 
@@ -26,7 +27,8 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     await dbConnect();
-    const body = await request.json();
+    const { imageData, removeImage, ...body } = await request.json();
+    const imageFields = parseImageFields({ imageData });
     
     // Ensure the date is stored as a midnight date for consistency
     const postDate = new Date(body.date);
@@ -34,12 +36,16 @@ export async function POST(request: Request) {
     
     const post = await Post.create({
       ...body,
+      ...imageFields,
       date: postDate,
     });
     
-    return NextResponse.json(post, { status: 201 });
+    return NextResponse.json(toClientPost(post), { status: 201 });
   } catch (error: any) {
     console.error("POST /api/posts error:", error);
+    if (error instanceof ImageError) {
+      return NextResponse.json({ error: error.message }, { status: 400 });
+    }
     if (error.code === 11000) {
       return NextResponse.json({ error: 'A post already exists for this date.' }, { status: 400 });
     }
@@ -51,7 +57,8 @@ export async function PUT(request: Request) {
   try {
     await dbConnect();
     const body = await request.json();
-    const { _id, ...updateData } = body;
+    const { _id, imageData, removeImage, ...updateData } = body;
+    const imageFields = parseImageFields({ imageData, removeImage });
 
     if (!_id) {
       return NextResponse.json({ error: 'Post ID is required' }, { status: 400 });
@@ -64,7 +71,7 @@ export async function PUT(request: Request) {
         updateData.date = postDate;
     }
 
-    const post = await Post.findByIdAndUpdate(_id, updateData, {
+    const post = await Post.findByIdAndUpdate(_id, { ...updateData, ...imageFields }, {
       new: true,
       runValidators: true,
     });
@@ -73,9 +80,12 @@ export async function PUT(request: Request) {
       return NextResponse.json({ error: 'Post not found' }, { status: 404 });
     }
 
-    return NextResponse.json(post);
+    return NextResponse.json(toClientPost(post));
   } catch (error: any) {
     console.error("PUT /api/posts error:", error);
+    if (error instanceof ImageError) {
+      return NextResponse.json({ error: error.message }, { status: 400 });
+    }
     if (error.code === 11000) {
         return NextResponse.json({ error: 'A post already exists for this date.' }, { status: 400 });
     }

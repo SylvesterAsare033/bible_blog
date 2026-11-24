@@ -1,3 +1,5 @@
+/* eslint-disable @next/next/no-page-custom-font */
+/* eslint-disable @next/next/no-html-link-for-pages */
 import type { Metadata, Viewport } from "next";
 import { Analytics } from "@vercel/analytics/next";
 import ThemeToggle from "@/components/ThemeToggle";
@@ -11,6 +13,13 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
+  // Makes relative OG image URLs absolute, which WhatsApp requires.
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL ||
+      (process.env.VERCEL_PROJECT_PRODUCTION_URL
+        ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+        : "https://bible-blog-seven.vercel.app"),
+  ),
   title: {
     default: "Daily Light | Bible Blog",
     template: "%s | Daily Light",
@@ -78,11 +87,13 @@ export default function RootLayout({
       <body>
         <nav className="navbar">
           <div className="nav-content">
+            {/* // eslint-disable-next-line @next/next/no-html-link-for-pages */}
             <a href="/" className="logo">
               {/* <img src="/logo.png" alt="Daily Light" className="logo-image" /> */}
               Daily Light
             </a>
             <div className="nav-links">
+              {/* // eslint-disable-next-line @next/next/no-html-link-for-pages */}
               <a href="/">Today</a>
               <a href="/archive">The Archive</a>
               <ThemeToggle />

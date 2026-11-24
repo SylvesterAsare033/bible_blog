@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 
 interface Post {
@@ -9,8 +9,36 @@ interface Post {
   reference: string;
   insight: string;
   remember?: string;
+  prayer?: string;
+  imageVersion?: number;
   date: string;
   likes?: number;
+}
+
+/**
+ * Resizes an image in the browser to at most 1200px wide and re-encodes it as
+ * JPEG, keeping it small enough for WhatsApp link previews (~300 KB max).
+ */
+async function compressImage(file: File): Promise<string> {
+  const bitmap = await createImageBitmap(file);
+  const scale = Math.min(1, 1200 / bitmap.width);
+  const canvas = document.createElement("canvas");
+  canvas.width = Math.round(bitmap.width * scale);
+  canvas.height = Math.round(bitmap.height * scale);
+  const ctx = canvas.getContext("2d")!;
+  ctx.fillStyle = "#ffffff"; // flatten transparent PNGs onto white
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+  bitmap.close();
+
+  let quality = 0.85;
+  let dataUrl = canvas.toDataURL("image/jpeg", quality);
+  // base64 is ~4/3 the byte size; step quality down until under ~280 KB.
+  while (dataUrl.length * 0.75 > 280 * 1024 && quality > 0.4) {
+    quality -= 0.1;
+    dataUrl = canvas.toDataURL("image/jpeg", quality);
+  }
+  return dataUrl;
 }
 
 export default function Admin() {
@@ -19,13 +47,57 @@ export default function Admin() {
     reference: "",
     insight: "",
     remember: "",
+    prayer: "",
     date: new Date().toISOString().split('T')[0]
   });
   const [posts, setPosts] = useState<Post[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  // Image state: a newly picked image (data URL), the preview shown, and
+  // whether the existing image should be removed on save.
+  const [imageData, setImageData] = useState<string | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [removeImage, setRemoveImage] = useState(false);
+  const [processingImage, setProcessingImage] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
+
+  const resetImage = () => {
+    setImageData(null);
+    setImagePreview(null);
+    setRemoveImage(false);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      setError("Please choose an image file.");
+      return;
+    }
+    setProcessingImage(true);
+    setError("");
+    try {
+      const dataUrl = await compressImage(file);
+      setImageData(dataUrl);
+      setImagePreview(dataUrl);
+      setRemoveImage(false);
+    } catch (err) {
+      console.error(err);
+      setError("Could not read that image. Try a JPEG or PNG.");
+    } finally {
+      setProcessingImage(false);
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setImageData(null);
+    setImagePreview(null);
+    setRemoveImage(true);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
 
   useEffect(() => {
     fetchPosts();
@@ -50,8 +122,15 @@ export default function Admin() {
       reference: post.reference,
       insight: post.insight,
       remember: post.remember || "",
+      prayer: post.prayer || "",
       date: new Date(post.date).toISOString().split('T')[0]
     });
+    setImageData(null);
+    setRemoveImage(false);
+    setImagePreview(
+      post.imageVersion ? `/api/posts/${post._id}/image?v=${post.imageVersion}` : null
+    );
+    if (fileInputRef.current) fileInputRef.current.value = "";
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -62,8 +141,10 @@ export default function Admin() {
       reference: "",
       insight: "",
       remember: "",
+      prayer: "",
       date: new Date().toISOString().split('T')[0]
     });
+    resetImage();
     setError("");
   };
 
@@ -74,7 +155,12 @@ export default function Admin() {
 
     try {
       const method = editingId ? "PUT" : "POST";
-      const body = editingId ? { ...formData, _id: editingId } : formData;
+      const body = {
+        ...formData,
+        ...(editingId && { _id: editingId }),
+        ...(imageData && { imageData }),
+        ...(editingId && removeImage && !imageData && { removeImage: true }),
+      };
 
       const res = await fetch("/api/posts", {
         method,
@@ -169,6 +255,44 @@ export default function Admin() {
           </div>
 
           <div className="form-field">
+            <label className="form-label-editorial">A Prayer (Optional)</label>
+            <textarea 
+              className="input-editorial"
+              style={{ minHeight: '120px', lineHeight: '1.6' }}
+              value={formData.prayer}
+              onChange={(e) => setFormData({...formData, prayer: e.target.value})}
+              placeholder="Lord, help us to..."
+            />
+          </div>
+
+          <div className="form-field">
+            <label className="form-label-editorial">Feature Image (Optional)</label>
+            <p style={{ fontSize: '0.85rem', opacity: 0.6, marginBottom: '1rem' }}>
+              Shown at the top of the post and as the preview when shared on WhatsApp. A wide (landscape) image works best.
+            </p>
+            {imagePreview && (
+              <div className="admin-image-preview">
+                <img src={imagePreview} alt="Selected feature" />
+              </div>
+            )}
+            <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap' }}>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                onChange={handleImageChange}
+                disabled={processingImage}
+              />
+              {imagePreview && (
+                <button type="button" className="btn-secondary-editorial" onClick={handleRemoveImage}>
+                  Remove Image
+                </button>
+              )}
+              {processingImage && <span style={{ fontSize: '0.85rem', opacity: 0.6 }}>Preparing image…</span>}
+            </div>
+          </div>
+
+          <div className="form-field">
             <label className="form-label-editorial">Publication Date</label>
             <input 
               type="date"
@@ -180,7 +304,7 @@ export default function Admin() {
           </div>
 
           <div style={{ marginTop: '4rem', display: 'flex', gap: '1rem' }}>
-            <button type="submit" className="btn-editorial" disabled={loading}>
+            <button type="submit" className="btn-editorial" disabled={loading || processingImage}>
               {loading ? "Saving..." : (editingId ? "Update Insight" : "Commit to Archive")}
             </button>
             {editingId && (
@@ -220,6 +344,13 @@ export default function Admin() {
                <p style={{ fontSize: '1rem', lineHeight: '1.7', opacity: 0.7, display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
                  {post.insight}
                </p>
+               {post.imageVersion && (
+                 <img
+                   src={`/api/posts/${post._id}/image?v=${post.imageVersion}`}
+                   alt=""
+                   style={{ width: '100%', maxHeight: '180px', objectFit: 'cover', marginBottom: '1.5rem' }}
+                 />
+               )}
                {post.remember && (
                  <p style={{ marginTop: '1rem', fontSize: '0.9rem', fontStyle: 'italic', color: 'var(--stone)', opacity: 0.8 }}>
                    <strong>Remember:</strong> {post.remember}
